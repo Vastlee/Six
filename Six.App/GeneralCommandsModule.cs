@@ -1,7 +1,11 @@
 ﻿using Discord.Commands;
+using Six.App;
 
 public class GeneralCommandsModule : ModuleBase<SocketCommandContext> {
-    [Command("Test")]
-    [Summary("Testing")]
-    public Task TestReplyAsync() => ReplyAsync("Passed");
+    [Command("DYEL")]
+    [Summary("Responds with the Lifting Day!")]
+    public Task TestReplyAsync(int offset = 0) {
+        WorkoutDay todaysWorkout = DYEL.GetWorkout(offset);
+        return ReplyAsync($"Damn Right I Do! Today's focus is {todaysWorkout.Type} Round #{todaysWorkout.Round}");
+    }
 }

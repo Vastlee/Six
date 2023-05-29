@@ -2,18 +2,22 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Six.App;
 
-class Program {
+public class Program {
     const char COMMAND_PREFIX = '!';
-    const long TEST_CHANNEL_ID = 908443546930020382;
+    const ulong TEST_CHANNEL_ID = 908443546930020382;
+    const bool TEST_MODE = false;
 
     DiscordSocketClient client;
     readonly CommandService commands;
-    readonly IServiceProvider services;
+    readonly IServiceProvider? services;
+
+    public static TPEData? TPE { get; private set; }
 
     public static Task Main() => new Program().MainAsync();
 
-    Program() {
+    public Program() {
         DiscordSocketConfig socketConfig;
         CommandServiceConfig commandsConfig;
 
@@ -24,6 +28,7 @@ class Program {
         };
 
         client = new(socketConfig);
+        client.Ready += SetupOnReady;
 
         commandsConfig = new() {
             LogLevel = LogSeverity.Info,
@@ -60,13 +65,17 @@ class Program {
 
     public async Task MainAsync() {
         await InitCommands();
-
         string? token = Environment.GetEnvironmentVariable("SIX_TOKEN");
 
         await client.LoginAsync(TokenType.Bot, token);
         await client.StartAsync();
-
         await Task.Delay(-1);
+    }
+
+    Task SetupOnReady() {
+        TPE = new(client);
+        DYEL.StartLiftingUpdates();
+        return Task.CompletedTask;
     }
 
     async Task InitCommands() {
@@ -80,7 +89,7 @@ class Program {
         if(userMessage == null) { return; }
         if(AuthorIsMe()) { return; }
         if(AuthorIsABot()) { return; }
-        if(!InTestChannge()) { return; }
+        if(TEST_MODE && !InTestChannel()) { return; }
 
         int pos = 0;
 
@@ -98,6 +107,6 @@ class Program {
 
         bool AuthorIsMe() => userMessage.Author.Id == client.CurrentUser.Id;
         bool AuthorIsABot() => userMessage.Author.IsBot;
-        bool InTestChannge() => userMessage.Channel.Id == TEST_CHANNEL_ID;
+        bool InTestChannel() => userMessage!.Channel.Id == TEST_CHANNEL_ID;
     }
 }
