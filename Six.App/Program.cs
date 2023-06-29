@@ -11,7 +11,7 @@ public class Program {
 
     DiscordSocketClient client;
     readonly CommandService commands;
-    readonly IServiceProvider? services;
+    readonly IServiceProvider? services = null;
 
     public static TPEData? TPE { get; private set; }
 
@@ -72,15 +72,13 @@ public class Program {
         await Task.Delay(-1);
     }
 
-    Task SetupOnReady() {
+    async Task SetupOnReady() {
         TPE = new(client);
-        DYEL.StartLiftingUpdates();
-        return Task.CompletedTask;
+        await DYEL.StartLiftingUpdates();
     }
 
     async Task InitCommands() {
         await commands.AddModulesAsync(Assembly.GetEntryAssembly(), services);
-        //await commands.AddModuleAsync<GeneralCommandsModule>(services);
         client.MessageReceived += HandleCommandAsync;
     }
 

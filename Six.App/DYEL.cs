@@ -1,17 +1,25 @@
-﻿using System.Timers;
-using Discord;
+﻿using System.Text.Json;
+using System.Timers;
+
+using Timer = System.Timers.Timer;
 
 namespace Six.App;
 
 public class DYEL {
     public enum WorkoutType { None, Push, Pull, Leg, Hybrid, Rest }
 
-    static System.Timers.Timer? newLiftingDayTimer = new(MillisecondsUntilMidnight);
+    const string CONFIG_FILE_NAME = "DYELConfig.json";
 
-    static double MillisecondsUntilMidnight => DateTime.Today.AddDays(1).Subtract(DateTime.Now).TotalMilliseconds;
+    static Timer newLiftingDayTimer = new(69420) {
+        AutoReset = true,
+        Enabled = true
+    };
 
     public static DateTime StartDate => new(2023, 05, 27);
 
+    static DYELConfig config = new();
+
+    public static event Action<DYELConfig>? OnDYELChange;
 
     public static WorkoutDay GetWorkout(int offset = 0) {
         TimeSpan startDateDelta = DateTime.Now - StartDate;
@@ -28,23 +36,34 @@ public class DYEL {
         }, round);
     }
 
-    public static void StartLiftingUpdates() {
-        newLiftingDayTimer!.Elapsed += NewLiftingDay;
-        newLiftingDayTimer.Start();
-        UpdateChannel();
+    public static async Task StartLiftingUpdates() {
+        await ReadinConfigAsync();
+        newLiftingDayTimer!.Elapsed += CheckForNewLiftingDay;
     }
 
-    static void NewLiftingDay(object? sender, ElapsedEventArgs e) {
-        UpdateChannel();
-
-        newLiftingDayTimer!.Interval = MillisecondsUntilMidnight;
-        newLiftingDayTimer.Start();
+    static void CheckForNewLiftingDay(object? sender, ElapsedEventArgs e) {
+        if(DateTime.Now.Day != config.LastAnnounced.Day) {
+            Task.Run(() => UpdateChannel());
+        }
     }
 
-    static void UpdateChannel() {
+    static async Task UpdateChannel() {
+        config = new DYELConfig() { LastAnnounced = DateTime.Now };
+        await SaveConfig();
         WorkoutDay todaysWorkout = GetWorkout();
         Program.TPE?.DYELChannel?.ModifyAsync(x => x.Topic = $"Workout: {todaysWorkout.Type} :muscle: Round: {todaysWorkout.Round}");
         Program.TPE?.DYELChannel?.SendMessageAsync($"It's A New Day! Today we're doing {todaysWorkout.Type} #{todaysWorkout.Round}");
+    }
+
+    static async Task ReadinConfigAsync() {
+        using FileStream createStream = File.Create(CONFIG_FILE_NAME);
+        await JsonSerializer.SerializeAsync(createStream, config);
+        await createStream.DisposeAsync();
+    }
+
+    static async Task SaveConfig() {
+        string saveJson = JsonSerializer.Serialize(config);
+        await File.WriteAllTextAsync(CONFIG_FILE_NAME, saveJson);
     }
 }
 
