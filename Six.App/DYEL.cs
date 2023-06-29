@@ -12,7 +12,7 @@ public class DYEL {
 
     public static DateTime StartDate => new(2023, 05, 27);
 
-    public static WorkoutDay GetWorkout(int offset = 0, isRobby = false) {
+    public static WorkoutDay GetWorkout(int offset = 0, bool isRobby = false) {
         TimeSpan startDateDelta = DateTime.Now - StartDate;
 
         int cycleDays = isRobby ? 4 : 3;
