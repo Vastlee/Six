@@ -12,32 +12,18 @@ public class DYEL {
 
     public static DateTime StartDate => new(2023, 05, 27);
 
-    public static WorkoutDay GetWorkout(int offset = 0) {
+    public static WorkoutDay GetWorkout(int offset = 0, isRobby = false) {
         TimeSpan startDateDelta = DateTime.Now - StartDate;
 
-        var workout = (startDateDelta.Days + offset) % 6;
-        var day = workout % 3;
-        int round = (workout > 2) ? 1 : 2;
+        int cycleDays = isRobby ? 4 : 3;
+        var workout = (startDateDelta.Days + offset) % (cycleDays * 2);
+        var day = workout % cycleDays;
+        int round = (workout >= cycleDays) ? 1 : 2;
 
         return new WorkoutDay(day switch {
             0 => WorkoutType.Push,
             1 => WorkoutType.Pull,
-            2 => WorkoutType.Hybrid,
-            _ => WorkoutType.Rest,
-        }, round);
-    }
-
-    public static WorkoutDay GetRobbyWorkout(int offset = 0) {
-        TimeSpan startDateDelta = DateTime.Now - StartDate;
-
-        var workout = (startDateDelta.Days + offset) % 8;
-        var day = workout % 4;
-        int round = (workout > 3) ? 1 : 2;
-
-        return new WorkoutDay(day switch {
-            0 => WorkoutType.Push,
-            1 => WorkoutType.Pull,
-            2 => WorkoutType.Leg,
+            2 => isRobby ? WorkoutType.Leg : WorkoutType.Hybrid,
             3 => WorkoutType.Rest,
         }, round);
     }
@@ -57,9 +43,9 @@ public class DYEL {
 
     static void UpdateChannel() {
         WorkoutDay todaysWorkout = GetWorkout();
-        WorkoutDay robbysTodayWorkout = GetRobbyWorkout();
+        WorkoutDay robbysTodayWorkout = GetWorkout(0, true);
         Program.TPE?.DYELChannel?.ModifyAsync(x => x.Topic = $"Workout: {todaysWorkout.Type} :muscle: Round: {todaysWorkout.Round}");
-        Program.TPE?.DYELChannel?.SendMessageAsync($"It's A New Day! Today we're doing {todaysWorkout.Type} #{todaysWorkout.Round}. Robby you're doing #{robbysWorkout.Round}");
+        Program.TPE?.DYELChannel?.SendMessageAsync($"It's A New Day! Today we're doing {todaysWorkout.Type} #{todaysWorkout.Round}. Robby you're doing {todaysWorkout.Type}");
     }
 }
 
