@@ -15,9 +15,9 @@ public class DYEL {
         Enabled = true
     };
 
-    public static DateTime StartDate => new(2023, 05, 27);
-
     static DYELConfig config = new();
+
+    public static DateTime StartDate => new(2023, 05, 27);
 
     public static event Action<DYELConfig>? OnDYELChange;
 
