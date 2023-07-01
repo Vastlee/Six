@@ -19,7 +19,7 @@ public class DYEL {
 
     public static DateTime StartDate => new(2023, 05, 27);
 
-    public static event Action<DYELConfig>? OnDYELChange;
+    // public static event Action<DYELConfig>? OnDYELChange;
 
     public static WorkoutDay GetWorkout(int offset = 0) {
         TimeSpan startDateDelta = DateTime.Now - StartDate;
@@ -42,7 +42,7 @@ public class DYEL {
     }
 
     static void CheckForNewLiftingDay(object? sender, ElapsedEventArgs e) {
-        if(DateTime.Now.Day != config.LastAnnounced.Day) {
+        if (DateTime.Now.Day != config.LastAnnounced.Day) {
             Task.Run(() => UpdateChannel());
         }
     }
