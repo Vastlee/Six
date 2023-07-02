@@ -15,7 +15,5 @@ public class TPEData {
         Client = client;
         Server = client.GetGuild(SERVER_ID);
         DYELChannel = Server.GetChannel(CHANNEL_ID) as ITextChannel;
-        Server = client.GetGuild(GUILD_ID);
-        DYELChannel = Server.GetChannel(DYEL_CHANNEL_ID) as ITextChannel;
     }
 }
