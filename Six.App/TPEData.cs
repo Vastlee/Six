@@ -14,7 +14,7 @@ public class TPEData {
 
     public TPEData(DiscordSocketClient client) {
         Client = client;
-        Server = client.GetGuild(839645961147121684);
+        Server = client.GetGuild(GUILD_ID);
         DYELChannel = Server.GetChannel(DYEL_CHANNEL_ID) as ITextChannel;
     }
 }
