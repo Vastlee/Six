@@ -3,10 +3,9 @@ using Discord.WebSocket;
 
 namespace Six.App;
 
-public class TPEData {    
-    const ulong GUILD_ID = 839645961147121684;
-    const ulong DYEL_CHANNEL_ID = 842617395440517161;
-    //const ulong DYEL_CHANNEL_ID = 908443546930020382; Test Channel
+public class TPEData {
+    static readonly ulong SERVER_ID = ulong.Parse(Environment.GetEnvironmentVariable("SIX_SERVER_ID") ?? throw new InvalidOperationException("SIX_SERVER_ID is not set"));
+    static readonly ulong CHANNEL_ID = ulong.Parse(Environment.GetEnvironmentVariable("SIX_CHANNEL_ID") ?? throw new InvalidOperationException("SIX_CHANNEL_ID is not set"));
 
     public DiscordSocketClient Client { get; init; }
     public SocketGuild Server { get; init; }
@@ -14,7 +13,7 @@ public class TPEData {
 
     public TPEData(DiscordSocketClient client) {
         Client = client;
-        Server = client.GetGuild(GUILD_ID);
-        DYELChannel = Server.GetChannel(DYEL_CHANNEL_ID) as ITextChannel;
+        Server = client.GetGuild(SERVER_ID);
+        DYELChannel = Server.GetChannel(CHANNEL_ID) as ITextChannel;
     }
 }
