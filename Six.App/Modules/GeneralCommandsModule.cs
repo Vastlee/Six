@@ -9,4 +9,13 @@ public class GeneralCommandsModule : ModuleBase<SocketCommandContext> {
         // Example: if(Context.User.Id == 284370066873647105) { DoTheSpecialRobbyStuff(); }
         return ReplyAsync($"Damn Right I Do! Today's focus is {todaysWorkout.Type} Round #{todaysWorkout.Round}");
     }
+
+    [Command("joke")]
+    [Summary("Says a Random Joke.")]
+    public Task JokeReplyAsync()
+    {
+        var author = Context.Message.Author.Mention;
+        var joke = Joke.GetNewJokeAsync(author).Result;
+        return ReplyAsync(joke.Value);  
+    }
 }
