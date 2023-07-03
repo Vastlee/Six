@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-public class JokeData
-{
+public class JokeData {
     [JsonProperty("categories")]
     public string[] Categories { get; set; }
     [JsonProperty("created_at")]

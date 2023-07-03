@@ -12,8 +12,7 @@ public class GeneralCommandsModule : ModuleBase<SocketCommandContext> {
 
     [Command("joke")]
     [Summary("Says a Random Joke.")]
-    public Task JokeReplyAsync()
-    {
+    public Task JokeReplyAsync() {
         var author = Context.Message.Author.Mention;
         var joke = Joke.GetNewJokeAsync(author).Result;
         return ReplyAsync(joke.Value);  
